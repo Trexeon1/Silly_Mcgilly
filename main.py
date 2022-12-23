@@ -89,8 +89,10 @@ def get_keywords(image_link):
 
     maximum = 0
     max_word = "Daft"
+    common_words = ["the", "of", "and", "a", "to", "in", "is", "you", "that", "it"]
+
     for i in words:
-        if words[i] > maximum and i != "the":
+        if words[i] > maximum and i not in common_words:
             max_word = i
             maximum = words[i]
 
@@ -124,23 +126,26 @@ def store_as_opencv_object(image_link):
 
 
 if __name__ == '__main__':
+    dim = (500, 500)
     bg = np.zeros((1000, 1000, 3), dtype=np.uint8)
     arrows = cv2.imread('overlay.png', cv2.IMREAD_UNCHANGED)
     images = []
 
     image_1 = input("What is the link for the starting image? ")
-    images.append(store_as_opencv_object(image_1))
+    images.append(cv2.resize(store_as_opencv_object(image_1), dim))
     image_2 = get_high_quality_images(get_keywords(image_1))
-    images.append(store_as_opencv_object(image_2))
+    images.append(cv2.resize(store_as_opencv_object(image_2), dim))
     image_3 = get_high_quality_images(get_keywords(image_2))
-    images.append(store_as_opencv_object(image_3))
+    images.append(cv2.resize(store_as_opencv_object(image_3), dim))
     image_4 = get_high_quality_images(get_keywords(image_3))
-    images.append(store_as_opencv_object(image_4))
+    images.append(cv2.resize(store_as_opencv_object(image_4), dim))
+
 
     x = 1
     for i in images:
         bg = place_image(bg, i, x)
         x += 1
+    bg = overlay_transparent(bg, arrows, 0, 0)
 
     cv2.imwrite("Result.png", bg)
     cv2.imshow("result", bg)
